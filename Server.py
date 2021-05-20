@@ -11,11 +11,11 @@ class Server:
         self.state=idle
         self.scheduler=scheduler
         self.entitatActiva=null
-        
-    def crearConnexio(self,server2,queue):
+
+    def crearConnexio(self,queue,sink):
         self.queue=queue
-        self.server=server2
-    
+        self.sink=sink
+
     def recullEntitat(self,time,entitat):
         self.entitatsTractades=entitat
         self.programarFinalServei(time,entitat)
@@ -52,7 +52,5 @@ class Server:
                 queue.recullEntitat(event.time,event.entitat)
             ...
         self.estat=idle
-    
-    ... 
 
-        
+    ...

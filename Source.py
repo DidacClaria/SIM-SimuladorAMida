@@ -1,6 +1,8 @@
 #millor treballar amb define o algun sistema simular a l'enum de C++
 from enumeracions import *
 from Server import *
+from Event import *
+from Queue import *
 
 class Source:
 
@@ -9,15 +11,15 @@ class Source:
         entitatsCreades=0
         self.state=idle
         self.scheduler=scheduler
-    
+
     def crearConnexio(self,server):
-        self.server=server     
+        self.server=server
 
     def tractarEsdeveniment(self, event):
-        if (event.tipus=='SIMULATION START'):
+        if (event.type=='SIMULATION START'):
             self.simulationStart(event)
 
-        if (event.tipus=='NEXT ARRIVAL'):
+        if (event.type=='NEXT ARRIVAL'):
             self.processNextArrival()
         ...
 
@@ -26,7 +28,7 @@ class Source:
         self.scheduler.afegirEsdeveniment(nouEvent)
 
     def processNextArrival(self,event):
-        # Cal crear l'entitat 
+        # Cal crear l'entitat
         entitat=self.crearEntitat(self)
         # Mirar si es pot transferir a on per toqui
         if (server.estat==idle):
@@ -41,10 +43,9 @@ class Source:
 
     def properaArribada(self, time):
         # cada quan generem una arribada (aleatorietat)
-        tempsEntreArribades = _alguna_funcio ()
+        tempsEntreArribades = distribucioNormal()
         # incrementem estadistics si s'escau
         self.entitatsCreades=self.entitatsCreades+1
         self.state = busy
         # programació primera arribada
-        return Event(self,'NEXT ARRIVAL', time+ tempsEntreArribades,null)   
-         
+        return Event(self,'NEXT ARRIVAL', time+ tempsEntreArribades,null)
