@@ -1,5 +1,4 @@
 #millor treballar amb define o algun sistema simular a l'enum de C++
-from enumeracions import *
 from Server import *
 from Event import *
 

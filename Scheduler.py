@@ -3,6 +3,7 @@ from Source import *
 from Event import *
 from Queue import *
 from Sink import *
+from TerminalColors import TerminalColors as color
 
 class Scheduler:
 
@@ -11,11 +12,14 @@ class Scheduler:
 
     def __init__(self):
         # creació dels objectes que composen el meu model
-        self.source = Source(self)
+        self.source1 = Source(self)
         self.Queue1 = Queue(self)
         self.Queue2 = Queue(self)
         self.Queue3 = Queue(self)
         self.Queue4 = Queue(self)
+
+        self.source2 = Source(self)
+        self.Queue5 = Queue(self)
         # self.Caja1 = Server()
         # self.Caja2 = Server()
         # self.Caja3 = Server()
@@ -24,8 +28,12 @@ class Scheduler:
         # self.Caja6 = Server()
         # self.sink = Sink()
 
-        
-        self.source.crearConnexions(self.Queue1, self.Queue2, self.Queue3, self.Queue4)
+        self.source1.crearConnexio(self.Queue1)
+        self.source1.crearConnexio(self.Queue2)
+        self.source1.crearConnexio(self.Queue3)
+        self.source1.crearConnexio(self.Queue4)
+
+        self.source2.crearConnexio(self.Queue5)
 
         # self.Caja1.crearConnexio(Queue1,sink)
         # self.Caja2.crearConnexio(Queue2,sink)
@@ -64,13 +72,19 @@ class Scheduler:
 
     def afegirEsdeveniment(self,event):
         #inserir esdeveniment de forma ordenada
+        if (event.time < self.currentTime):
+            print(color.FAIL, "[ERROR]: Viaje en el tiempo inesperado.", color.ENDC)
+            return;
+        print("Se ha añadido un evento de tipo ", event.type)
         self.eventList.append(event)
 
     def tractarEsdeveniment(self,event):
         if (event.type == "SIMULATION_START"):
             print("Scheduler trata un evento de tipo SIMULATION_START")
+
             # comunicar a tots els objectes que cal preparar-se
-            self.afegirEsdeveniment(Event(self.source, 'SIMULATION_START', 0, None))
+            self.afegirEsdeveniment(Event(self.source1, 'SIMULATION_START', 0, None))
+            self.afegirEsdeveniment(Event(self.source2, 'SIMULATION_START', 0, None))
 
     def sortEvents(self, e):
         return e.time

@@ -4,7 +4,7 @@ class Queue:
 
     def __init__(self,scheduler):
         # inicialitzar element de simulació
-        entitatsTractades=0
+        self.entitatsTractades=0
         self.state='idle'
         self.scheduler=scheduler
         self.pesTotal = 0
