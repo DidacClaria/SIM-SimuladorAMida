@@ -1,19 +1,30 @@
 #millor treballar amb define o algun sistema simular a l'enum de C++
-from enumeracions import *
-from Server import *
+# from enumeracions import *
+# from Server import *
 from Event import *
 from Queue import *
+from Client import *
+from Scheduler import *
 
 class Source:
 
     def __init__(self,scheduler):
         # inicialitzar element de simulació
         entitatsCreades=0
-        self.state=idle
+        self.state='idle'
         self.scheduler=scheduler
+        print("Se ha creado un Source")
 
-    def crearConnexio(self,server):
-        self.server=server
+    def crearConnexio(self,queue):
+        self.queue=queue
+        print("Se ha conectado una queue con una source.")
+
+    def crearConnexions(self,queue1,queue2,queue3,queue4):
+        self.queue1=queue1
+        self.queue2=queue2
+        self.queue3=queue3
+        self.queue4=queue4
+        print("Se ha conectado una queue con 4 sources.")
 
     def tractarEsdeveniment(self, event):
         if (event.type=='SIMULATION START'):
@@ -21,7 +32,6 @@ class Source:
 
         if (event.type=='NEXT ARRIVAL'):
             self.processNextArrival()
-        ...
 
     def simulationStart(self,event):
         nouEvent=self.properaArribada(0)
@@ -29,14 +39,20 @@ class Source:
 
     def processNextArrival(self,event):
         # Cal crear l'entitat
-        entitat=self.crearEntitat(self)
-        # Mirar si es pot transferir a on per toqui
-        if (server.estat==idle):
-            #transferir entitat (es pot fer amb un esdeveniment immediat o invocant a un métode de l'element)
-            server.recullEntitat(event.time,entitat)
-        else:
-            #incrementar entitats perdudes en creació (si s'escau necessari)
-            ...
+        entitat = self.crearEntitat(self)
+
+        # Mirar quina cua té menys pes
+        bestQueue = queue1
+        if (queue2.pesTotal < bestQueue.pesTotal):
+            bestQueue = queue2
+        if (queue3.pesTotal < bestQueue.pesTotal):
+            bestQueue = queue3
+        if (queue4.pesTotal < bestQueue.pesTotal):
+            bestQueue = queue4
+
+        # Transferir la entitat a la queue
+        bestQueue.recullEntitat(event.time, entitat)
+
         # Cal programar la següent arribada
         nouEvent=self.properaArribada(event.temps)
         self.scheduler.afegirEsdeveniment(nouEvent)
@@ -46,6 +62,10 @@ class Source:
         tempsEntreArribades = distribucioNormal()
         # incrementem estadistics si s'escau
         self.entitatsCreades=self.entitatsCreades+1
-        self.state = busy
+        self.state = 'busy'
         # programació primera arribada
         return Event(self,'NEXT ARRIVAL', time+ tempsEntreArribades,null)
+
+    def crearEntitat(self):
+        entitat = Client()
+        return entitat
