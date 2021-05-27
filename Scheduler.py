@@ -67,9 +67,10 @@ class Scheduler:
         self.eventList.append(event)
 
     def tractarEsdeveniment(self,event):
-        print("tractarEsdeveniment")
-        # if (event.tipus=="SIMULATION_START"):
+        if (event.type == "SIMULATION_START"):
+            print("Scheduler trata un evento de tipo SIMULATION_START")
             # comunicar a tots els objectes que cal preparar-se
+            self.afegirEsdeveniment(Event(self.source, 'SIMULATION_START', 0, None))
 
     def sortEvents(self, e):
         return e.time

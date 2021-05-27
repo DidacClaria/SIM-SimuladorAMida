@@ -5,12 +5,13 @@ from Event import *
 from Queue import *
 from Client import *
 from Scheduler import *
+import numpy as np
 
 class Source:
 
     def __init__(self,scheduler):
         # inicialitzar element de simulació
-        entitatsCreades=0
+        self.entitatsCreades=0
         self.state='idle'
         self.scheduler=scheduler
         print("Se ha creado un Source")
@@ -27,10 +28,11 @@ class Source:
         print("Se ha conectado una queue con 4 sources.")
 
     def tractarEsdeveniment(self, event):
-        if (event.type=='SIMULATION START'):
+        if (event.type=='SIMULATION_START'):
+            print("Source trata un evento de tipo SIMULATION_START")
             self.simulationStart(event)
 
-        if (event.type=='NEXT ARRIVAL'):
+        if (event.type=='NEXT_ARRIVAL'):
             self.processNextArrival()
 
     def simulationStart(self,event):
@@ -59,13 +61,16 @@ class Source:
 
     def properaArribada(self, time):
         # cada quan generem una arribada (aleatorietat)
-        tempsEntreArribades = distribucioNormal()
+        tempsEntreArribades = self.distribucioNormal(5, 10)
         # incrementem estadistics si s'escau
         self.entitatsCreades=self.entitatsCreades+1
         self.state = 'busy'
         # programació primera arribada
-        return Event(self,'NEXT ARRIVAL', time+ tempsEntreArribades,null)
+        return Event(self,'NEXT ARRIVAL', time+ tempsEntreArribades, None)
 
     def crearEntitat(self):
         entitat = Client()
         return entitat
+
+    def distribucioNormal(self, center, scale):
+        return np.random.normal(center, scale, None)
