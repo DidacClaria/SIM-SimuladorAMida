@@ -6,6 +6,7 @@ from Queue import *
 from Client import *
 from Scheduler import *
 from Distributions import distribucioNormal
+from SimulationParameters import Parameters
 from TerminalColors import TerminalColors as color
 from TerminalColors import log
 
@@ -74,7 +75,7 @@ class Source:
     def properaArribada(self, time):
 
         # cada quan generem una arribada (aleatorietat)
-        tempsEntreArribades = distribucioNormal(5, 1)
+        tempsEntreArribades = distribucioNormal(Parameters.llegadaClienteMedia, Parameters.llegadaClienteVarianza)
 
         # incrementem estadistics si s'escau
         self.entitatsCreades = self.entitatsCreades + 1
