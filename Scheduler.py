@@ -20,12 +20,12 @@ class Scheduler:
 
         # creació dels objectes que composen el meu model
         self.source1 = Source(self, 'Source1')
-        self.Queue1 = Queue(self, 'Cua1')
-        self.Queue2 = Queue(self, 'Cua2')
-        self.Queue3 = Queue(self, 'Cua3')
+        self.Queue1 = Queue(self, 'Cola1')
+        self.Queue2 = Queue(self, 'Cola2')
+        self.Queue3 = Queue(self, 'Cola3')
 
         self.source2 = Source(self, 'Source2')
-        self.Queue4 = Queue(self, 'Cua4')
+        self.Queue4 = Queue(self, 'ColaUnica')
         self.Caja1 = Server(self, 'Caja1')
         self.Caja2 = Server(self, 'Caja2')
         self.Caja3 = Server(self, 'Caja3')
@@ -122,15 +122,15 @@ class Scheduler:
 
 
     def recollirEstadistics(self):
-        print(self.currentTime)
         
         print(color.OKGREEN)
+
         print("Source1 ha creado ", self.source1.entitatsCreades, " entidades")
         print("Source2 ha creado ", self.source2.entitatsCreades, " entidades")
-        print("Cua1 contiene ", len(self.Queue1.entitats), " clientes con un peso total de ", self.Queue1.pesTotal)
-        print("Cua2 contiene ", len(self.Queue1.entitats), " clientes con un peso total de ", self.Queue2.pesTotal)
-        print("Cua3 contiene ", len(self.Queue1.entitats), " clientes con un peso total de ", self.Queue3.pesTotal)
-        print("Cua4 contiene ", len(self.Queue1.entitats), " clientes con un peso total de ", self.Queue4.pesTotal)
+        print("Cua1 contiene ", len(self.Queue1.entitats), " clientes con un peso total de {:.2f}".format(self.Queue1.pesTotal))
+        print("Cua2 contiene ", len(self.Queue1.entitats), " clientes con un peso total de {:.2f}".format(self.Queue1.pesTotal))
+        print("Cua3 contiene ", len(self.Queue1.entitats), " clientes con un peso total de {:.2f}".format(self.Queue1.pesTotal))
+        print("Cua4 contiene ", len(self.Queue1.entitats), " clientes con un peso total de {:.2f}".format(self.Queue1.pesTotal))
         print("Caja1 ha procesado ", self.Caja1.entitatsTractades, " entidades")
         print("Caja2 ha procesado ", self.Caja2.entitatsTractades, " entidades")
         print("Caja3 ha procesado ", self.Caja3.entitatsTractades, " entidades")
