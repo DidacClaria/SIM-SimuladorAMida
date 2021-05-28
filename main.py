@@ -8,5 +8,7 @@ def main():
 
     scheduler.run()
 
+    # Si falta instalar numpy, ejecutar: python3 -m pip install numpy
+
 if __name__ == "__main__":
     main()
