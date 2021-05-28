@@ -6,6 +6,6 @@ class Client:
     def __init__(self,scheduler):
         # inicialitzar element de simulació
         self.scheduler=scheduler
-        pes = distribucioNormal(10, 1)
-        print("Se ha creado un Cliente con peso = ", pes)
+        self.pes = distribucioNormal(15, 1)
+        # print("Se ha creado un Cliente con peso = ", pes)
         

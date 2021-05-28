@@ -8,3 +8,7 @@ class TerminalColors:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
+
+def log(scheduler, object, message, color):
+    if (not scheduler.debug): return
+    print("{}<{:.2f}>{}".format(TerminalColors.OKBLUE, scheduler.currentTime, color), "[{}]:".format(object.id), message, TerminalColors.ENDC)

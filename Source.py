@@ -6,36 +6,44 @@ from Queue import *
 from Client import *
 from Scheduler import *
 from Distributions import distribucioNormal
+from TerminalColors import TerminalColors as color
+from TerminalColors import log
 
 class Source:
 
-    def __init__(self,scheduler):
+    def __init__(self, scheduler, id):
         # inicialitzar element de simulació
+        self.id = id
         self.entitatsCreades=0
-        self.state='idle'
+        self.state = 'idle'
         self.scheduler=scheduler
         self.queues = []
-        print("Se ha creado un Source")
+        log(scheduler, self, "se ha creado".format(self.id), color.OKBLUE)
 
-    def crearConnexio(self,queue):
+
+    def crearConnexio(self, queue):
         self.queues.append(queue)
-        print("Se ha conectado una queue con una source.")
+        log(self.scheduler, self, "ha añadido {} como ouput".format(queue.id), color.OKBLUE)
+        # print(color.OKBLUE, "[{}] ha añadido {} como ouput".format(self.id, queue.id), color.ENDC)
+
 
     def tractarEsdeveniment(self, event):
+        log(self.scheduler, self, "Procesando evento ".format(self.id) + event.type, color.HEADER)
+
         if (event.type=='SIMULATION_START'):
-            print("Source trata un evento de tipo SIMULATION_START")
             self.simulationStart(event)
 
         elif (event.type=='NEXT_ARRIVAL'):
-            print("Source trata un evento de tipo NEXT_ARRIVAL")
             self.processNextArrival(event)
         
         else:
-            print("[ERROR]: Scheduler ha recibido un evento de tipo", event.type, "y no sabe cómo controlarlo")
+            log(self.scheduler, self, "[WARN]: ha recibido un evento de tipo {} y no sabe cómo gestionarlo".format(event.type), color.WARNING)
+
 
     def simulationStart(self,event):
         nouEvent=self.properaArribada(0)
         self.scheduler.afegirEsdeveniment(nouEvent)
+
 
     def processNextArrival(self,event):
 
@@ -45,13 +53,18 @@ class Source:
             entitat = self.crearEntitat()
 
             # Mirar quina cua té menys pes
-            bestQueue = self.queues[0]
+            bestQueue = None
             for queue in self.queues:
                 if ((bestQueue == None or queue.pesTotal < bestQueue.pesTotal) and queue.state != 'full'):
                     bestQueue = queue
 
             # Transferir la entitat a la queue
-            bestQueue.recullEntitat(event.time, entitat)
+            if (bestQueue):
+                log(self.scheduler, self, "Envía entidad creada a [{}]".format(bestQueue.id), color.OKCYAN)
+                bestQueue.recullEntitat(event.time, entitat)
+            
+            else:
+                log(self.scheduler, self, "[WARN]: ha creado una entidad pero no tiene ningún output libre", color.WARNING)
 
         # Cal programar la següent arribada
         nouEvent=self.properaArribada(event.time)
@@ -61,7 +74,7 @@ class Source:
     def properaArribada(self, time):
 
         # cada quan generem una arribada (aleatorietat)
-        tempsEntreArribades = distribucioNormal(10, 1)
+        tempsEntreArribades = distribucioNormal(5, 1)
 
         # incrementem estadistics si s'escau
         self.entitatsCreades = self.entitatsCreades + 1
@@ -70,6 +83,8 @@ class Source:
         # programació primera arribada
         return Event(self,'NEXT_ARRIVAL', time + tempsEntreArribades, None)
 
+
     def crearEntitat(self):
         entitat = Client(self.scheduler)
+        log(self.scheduler, self, "ha creado un Client con peso = {:.2f}".format(entitat.pes), color.OKGREEN)
         return entitat

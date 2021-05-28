@@ -1,55 +1,84 @@
 #millor treballar amb define o algun sistema simular a l'enum de C++
 from Server import *
 from Event import *
+from TerminalColors import TerminalColors as color
+from TerminalColors import log
 
 class Server:
 
-    def __init__(self,scheduler):
+    def __init__(self,scheduler, id):
         # inicialitzar element de simulació
-        entitatsTractades=0
-        self.state=idle
-        self.scheduler=scheduler
-        self.entitatActiva=null
+        self.id = id
+        self.entitatsTractades = 0
+        self.state = 'idle'
+        self.scheduler = scheduler
+        self.entitatActiva = None
 
-    def crearConnexio(self,queue,sink):
-        self.queue=queue
-        self.sink=sink
+        self.queue = None
+        self.sink = None
+        log(self.scheduler, self, "se ha creado", color.OKBLUE)
 
-    def recullEntitat(self,time,entitat):
-        self.entitatsTractades=entitat
+
+    def afegirInput(self, queue):
+        self.queue = queue
+        log(self.scheduler, self, "ha establecido {} como input".format(queue.id), color.OKBLUE)
+        queue.afegirOutput(self)
+
+
+    def afegirOutput(self, sink):
+        self.sink = sink
+        log(self.scheduler, self, "ha establecido {} como output".format(sink.id), color.OKBLUE)
+
+
+    def recullEntitat(self, time, entitat):
+        log(self.scheduler, self, "ha recibido una entidad", color.OKCYAN)
+        self.entitatActiva = entitat
         self.programarFinalServei(time,entitat)
 
+
     def tractarEsdeveniment(self, event):
-        if (event.tipus=='SIMULATION START'):
+        log(self.scheduler, self, "Procesando evento ".format(self.id) + event.type, color.HEADER)
+
+        if (event.type=='SIMULATION_START'):
             self.simulationStart(event)
 
-        if (event.tipus=='END_SERVICE'):
+        elif (event.type=='END_SERVICE'):
             self.processarFiServei(event)
 
-    def simulationStart(self,event):
-        self.state=idle
-        self.entitatsTractades=0
+        else:
+            log(self.scheduler, self, "[WARN]: ha recibido un evento de tipo {} y no sabe cómo gestionarlo".format(event.type), color.WARNING)
 
-    def programarFinalServei(self, time,entitat):
+
+    def simulationStart(self,event):
+        self.state = 'idle'
+        self.entitatsTractades = 0
+
+
+    def programarFinalServei(self, time, entitat):
+
         # que triguem a fer un servei (aleatorietat)
-        tempsServei = _alguna_funcio ()
+        tempsServei = entitat.pes
+
         # incrementem estadistics si s'escau
-        self.entitatsTractades=self.entitatsTractades+1
-        self.state = busy
+        self.state = 'busy'
+
         # programació final servei
-        return Event(self,'END_SERVICE', time+ tempsServei,entitat)
+        eventoProceso = Event(self, 'END_SERVICE', time + tempsServei, entitat)
+        self.scheduler.afegirEsdeveniment(eventoProceso)
+        
+        log(self.scheduler, self, "ha empezado a procesar una entidad y acabará en {:.2f}".format(eventoProceso.time), color.OKGREEN)
+
 
     def processarFiServei(self,event):
-        # Registrar estadístics
-        self.entitatsTractades=self.entitatsTractades+1
-        # Mirar si es pot transferir a on per toqui
-        if (server.estat==idle):
-            #transferir entitat (es pot fer amb un esdeveniment immediat o invocant a un métode de l'element)
-            server.recullEntitat(event.time,event.entitat)
-        else:
-            if (queue.estat==idle):
-                queue.recullEntitat(event.time,event.entitat)
-            ...
-        self.estat=idle
 
-    ...
+        log(self.scheduler, self, "ha terminado de procesar una entidad", color.OKGREEN)
+
+        # Registrar estadístics
+        self.entitatsTractades = self.entitatsTractades + 1
+
+        #sink.recullEntitat(entitat)
+        self.entitatActiva = None
+        self.state = 'idle'
+        log(self.scheduler, self, "solicita a {} que le envíe la siguiente entidad".format(self.queue.id), color.OKCYAN)
+        self.queue.enviaProperaEntitat(event.time, self)
+        
