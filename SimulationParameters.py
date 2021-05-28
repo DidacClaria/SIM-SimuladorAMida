@@ -1,7 +1,8 @@
 class Parameters:
+    totalSimulationTime = 500000
 
     tiempoEnCajaMedia = 180
     tiempoEnCajaVarianza = 30
 
-    llegadaClienteMedia = 60
-    llegadaClienteVarianza = 10
+    llegadaClienteMedia = 10
+    llegadaClienteVarianza = 3

@@ -4,7 +4,7 @@ def main():
     scheduler = Scheduler()
 
     scheduler.debug = True
-    scheduler.maxTime = 50000
+    scheduler.maxTime = 5000
 
     scheduler.run()
 

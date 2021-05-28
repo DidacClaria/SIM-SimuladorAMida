@@ -5,6 +5,7 @@ from Queue import *
 from Sink import *
 from TerminalColors import TerminalColors as color
 from TerminalColors import log
+from SimulationParameters import Parameters
 
 class Scheduler:
 
@@ -85,13 +86,15 @@ class Scheduler:
 
     def configurarModel(self):
         log(self, self, "[{}]: Configurando modelo...".format(self.id), color.OKBLUE)
+        self.maxTime = Parameters.totalSimulationTime
 
 
     def afegirEsdeveniment(self,event):
         #inserir esdeveniment de forma ordenada
         if (event.time < self.currentTime):
-            log(self, self, "[ERROR]: Viaje en el tiempo inesperado.", color.FAIL)
-            return;
+            # log(self, self, "[ERROR]: Viaje en el tiempo inesperado.", color.FAIL)
+            print("{}[ERROR]: Viaje en el tiempo inesperado{}".format(color.FAIL, color.ENDC))
+            event.time = self.currentTime
         self.eventList.append(event)
 
 
@@ -111,6 +114,7 @@ class Scheduler:
 
         else:
             log(scheduler, self, "[WARN]: ha recibido un evento de tipo {} y no sabe cómo gestionarlo".format(event.type), color.WARNING)
+
 
     def sortEvents(self, e):
         return e.time
