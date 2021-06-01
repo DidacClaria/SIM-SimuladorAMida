@@ -35,6 +35,7 @@ class Client:
 
         # Si el cliente se ha movido a una cola nueva, añadir un nuevo evento de cambiar cola
         if(isinstance(self.container, Queue)):
+
             eventoCambiarCola = Event(self, 'CHANGE_QUEUE', self.scheduler.currentTime + Parameters.tiempoEsperaEnCola, self)
             self.changeQueueEvent = eventoCambiarCola
             log(self.scheduler, self, "se ha movido a una nueva cola, y cambiará a otra cola si no ha llegado a la caja antes de {:.2f}".format(eventoCambiarCola.time), color.OKCYAN)
@@ -72,7 +73,12 @@ class Client:
         if (bestQueue):
             log(self.scheduler, self, "Cambia de cola de [{}] a [{}]".format(self.container.id, bestQueue.id), color.OKCYAN)
             Client.changed_lines = Client.changed_lines + 1
+            if (self.container.numEntitats < 1): print("{}[ERROR]: {} ha intentado decrementar el numero de clientes de {} a un valor negativo{}".format(color.FAIL, self.id, self.container.id, color.ENDC))
+
             self.container.numEntitats = self.container.numEntitats - 1
+            self.container.pesTotal = self.container.pesTotal - self.pes
+            self.container.entitats.remove(self)
+
             bestQueue.recullEntitat(self.scheduler.currentTime, self)
         
         else:

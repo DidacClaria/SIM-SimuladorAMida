@@ -34,10 +34,10 @@ class Queue:
 
     def recullEntitat(self, time, entitat):
         log(self.scheduler, self, "ha recibido una nueva entidad", color.OKCYAN)
-        self.numEntitats = self.numEntitats + 1
         entitat.moveTo(self)
         self.entitats.append(entitat)
-        self.entitatsAfegides = self.entitatsAfegides + 1
+        
+        self.numEntitats = self.numEntitats + 1
         self.pesTotal = self.pesTotal + entitat.pes
         
         idleServer = None

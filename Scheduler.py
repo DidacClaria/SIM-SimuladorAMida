@@ -153,8 +153,9 @@ class Scheduler:
             print ("COMPLETION: 100.00%", end="\r")
         
         print(color.OKGREEN)
+        print("Tiempo de ejecución = {:.2f} segundos".format(self.maxTime))
 
-        print("=========== CASO 1 ===========")
+        print("\n=========== CASO 1 ===========")
         print("Source1 ha creado ", self.source1.entitatsCreades, " entidades")
         print("Cua1 contiene ", self.Queue1.numEntitats, " clientes con un peso total de {:.2f} (incluyendo el cliente que está en caja)".format(self.Queue1.pesTotal))
         print("Cua2 contiene ", self.Queue2.numEntitats, " clientes con un peso total de {:.2f} (incluyendo el cliente que está en caja)".format(self.Queue2.pesTotal))

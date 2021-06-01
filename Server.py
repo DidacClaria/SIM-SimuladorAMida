@@ -77,8 +77,9 @@ class Server:
         self.entitatsTractades = self.entitatsTractades + 1
 
         #sink.recullEntitat(entitat)
-        self.queue.pesTotal = self.queue.pesTotal - self.entitatActiva.pes
+        if (self.queue.numEntitats < 1): print("{}[ERROR]: {} decrementar el numero de clientes de {} a un valor negativo{}".format(color.FAIL, self.id, self.queue.id, color.ENDC))
         self.queue.numEntitats = self.queue.numEntitats - 1
+        self.queue.pesTotal = self.queue.pesTotal - self.entitatActiva.pes
 
         self.entitatActiva = None
         self.state = 'idle'
