@@ -162,7 +162,7 @@ class Scheduler:
         print("Caja1 ha procesado ", self.Caja1.entitatsTractades, " entidades")
         print("Caja2 ha procesado ", self.Caja2.entitatsTractades, " entidades")
         print("Caja3 ha procesado ", self.Caja3.entitatsTractades, " entidades")
-        print(Client.changed_lines, " clientes han cambiado de cola")
+        print("Han habido ", Client.changed_lines, " cambios de cola")
 
         print("\n=========== CASO 2 ===========")
         print("Source2 ha creado ", self.source2.entitatsCreades, " entidades")

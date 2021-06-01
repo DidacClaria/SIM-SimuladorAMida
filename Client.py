@@ -72,6 +72,7 @@ class Client:
         if (bestQueue):
             log(self.scheduler, self, "Cambia de cola de [{}] a [{}]".format(self.container.id, bestQueue.id), color.OKCYAN)
             Client.changed_lines = Client.changed_lines + 1
+            self.container.numEntitats = self.container.numEntitats - 1
             bestQueue.recullEntitat(self.scheduler.currentTime, self)
         
         else:
