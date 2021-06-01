@@ -15,7 +15,7 @@ class Source:
     def __init__(self, scheduler, id):
         # inicialitzar element de simulació
         self.id = id
-        self.entitatsCreades=0
+        self.entitatsCreades = 0
         self.state = 'idle'
         self.scheduler=scheduler
         self.queues = []
@@ -77,8 +77,7 @@ class Source:
         # cada quan generem una arribada (aleatorietat)
         tempsEntreArribades = distribucioNormal(Parameters.llegadaClienteMedia, Parameters.llegadaClienteVarianza)
 
-        # incrementem estadistics si s'escau
-        self.entitatsCreades = self.entitatsCreades + 1
+        # incrementem estadistics
         self.state = 'busy'
 
         # programació primera arribada
@@ -86,6 +85,7 @@ class Source:
 
 
     def crearEntitat(self):
-        entitat = Client(self.scheduler)
+        entitat = Client(self.scheduler, self)
         log(self.scheduler, self, "ha creado un Client con peso = {:.2f}".format(entitat.pes), color.OKGREEN)
+        self.entitatsCreades = self.entitatsCreades + 1
         return entitat

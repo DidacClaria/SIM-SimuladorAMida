@@ -14,9 +14,11 @@ class Queue:
         
         self.entitats = []
         self.outputs = []
+        self.connectedQueues = []
 
         self.scheduler=scheduler
         self.pesTotal = 0
+        self.numEntitats = 0
         log(self.scheduler, self, "se ha creado", color.OKBLUE)
 
 
@@ -25,11 +27,18 @@ class Queue:
         log(self.scheduler, self, "ha añadido {} como ouput".format(server.id), color.OKBLUE)
 
 
+    def conectarAmbCua(self, queue):
+        self.connectedQueues.append(queue)
+        log(self.scheduler, self, "se ha conectado con la cola {}".format(queue.id), color.OKBLUE)
+
+
     def recullEntitat(self, time, entitat):
+        log(self.scheduler, self, "ha recibido una nueva entidad", color.OKCYAN)
+        self.numEntitats = self.numEntitats + 1
+        entitat.moveTo(self)
         self.entitats.append(entitat)
         self.entitatsAfegides = self.entitatsAfegides + 1
         self.pesTotal = self.pesTotal + entitat.pes
-        log(self.scheduler, self, "ha recibido una nueva entidad", color.OKCYAN)
         
         idleServer = None
         for server in self.outputs:
@@ -40,7 +49,7 @@ class Queue:
             # si alguno de los outputs tiene estado "idle", enviar la entidad
             self.enviaProperaEntitat(time, idleServer)
         else:
-            log(self.scheduler, self, "[WARN]: ha recibido una entidad pero ninguno de sus servers está libre", color.WARNING)
+            log(self.scheduler, self, "ha recibido una entidad pero ninguno de sus servers está libre", color.WARNING)
     
 
     def enviaProperaEntitat(self, time, server):
@@ -50,14 +59,14 @@ class Queue:
             # sacar entidad de la cola
             ultimaEntitat = self.entitats[0]
             self.entitats.remove(ultimaEntitat)
-            self.pesTotal = self.pesTotal - ultimaEntitat.pes
+            # self.pesTotal = self.pesTotal - ultimaEntitat.pes (ahora hago esto en Server, para que una entidad todavía en proceso siga contando como "peso" en la cola)
 
             # enviar entidad al server
             server.recullEntitat(time, ultimaEntitat)
 
         elif (len(self.entitats) == 0):
-            log(self.scheduler, self, "ha intentado enviar una entidad a {} pero ya no quedan más entidades disponibles".format(server.id), color.FAIL)
+            log(self.scheduler, self, "ha intentado enviar una entidad a {} pero ya no quedan más entidades disponibles".format(server.id), color.WARNING)
 
         elif (server.state != 'idle'):
-            log(self.scheduler, self, "{} se encuentra ocupada. El estado del server es = ".format(server.id), color.FAIL)
+            log(self.scheduler, self, "{} se encuentra ocupada. El estado del server es = ".format(server.id), color.WARNING)
 

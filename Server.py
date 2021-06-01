@@ -33,6 +33,7 @@ class Server:
     def recullEntitat(self, time, entitat):
         log(self.scheduler, self, "ha recibido una entidad", color.OKCYAN)
         self.entitatActiva = entitat
+        entitat.moveTo(self)
         self.programarFinalServei(time,entitat)
 
 
@@ -64,10 +65,9 @@ class Server:
 
         # programació final servei
         eventoProceso = Event(self, 'END_SERVICE', time + tempsServei, entitat)
+        log(self.scheduler, self, "ha empezado a procesar una entidad y acabará en {:.2f}".format(eventoProceso.time), color.OKGREEN)
         self.scheduler.afegirEsdeveniment(eventoProceso)
         
-        log(self.scheduler, self, "ha empezado a procesar una entidad y acabará en {:.2f}".format(eventoProceso.time), color.OKGREEN)
-
 
     def processarFiServei(self,event):
 
@@ -77,6 +77,9 @@ class Server:
         self.entitatsTractades = self.entitatsTractades + 1
 
         #sink.recullEntitat(entitat)
+        self.queue.pesTotal = self.queue.pesTotal - self.entitatActiva.pes
+        self.queue.numEntitats = self.queue.numEntitats - 1
+
         self.entitatActiva = None
         self.state = 'idle'
         log(self.scheduler, self, "solicita a {} que le envíe la siguiente entidad".format(self.queue.id), color.OKCYAN)
