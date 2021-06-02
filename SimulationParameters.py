@@ -6,5 +6,5 @@ class Parameters:
     llegadaClienteMedia = 80
     llegadaClienteVarianza = 15
 
-    tiempoEsperaEnCola = 9999999999999999
-    tiempoAhuecarElAla = 300
+    tiempoEsperaEnCola = 300
+    tiempoAhuecarElAla = 900

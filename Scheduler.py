@@ -26,7 +26,7 @@ class Scheduler:
         self.id = 'Scheduler'
 
         # Crear objectos del CASO 1: Tres colas intercambiables, cada una asignada a un Server
-        self.source1 = Source(self, 'Source1')
+        self.source1 = Source(self, 'Supermercado1')
         self.Queue1 = Queue(self, 'Cola1')
         self.Queue2 = Queue(self, 'Cola2')
         self.Queue3 = Queue(self, 'Cola3')
@@ -53,7 +53,7 @@ class Scheduler:
 
         # Crear objectos del CASO 2: Una única cola, asignada a 3 Servers distintos
 
-        self.source2 = Source(self, 'Source2')
+        self.source2 = Source(self, 'Supermercado2')
         self.Queue4 = Queue(self, 'ColaUnica')
         
         self.Caja4 = Server(self, 'Caja4')
@@ -69,7 +69,7 @@ class Scheduler:
         self.simulationStart=Event(self,'SIMULATION_START', 0, None)
         self.eventList.append(self.simulationStart)
         
-        self.latestPercentage = 0
+        self.latestPercentage = -100
         self.percentageStep = 0.5
 
 
@@ -160,9 +160,9 @@ class Scheduler:
             if (not "entitats_creades" in Scheduler.statistics[source.id]): Scheduler.statistics[source.id]["entitats_creades"] = []
             if (not "entitats_en_cua" in Scheduler.statistics[source.id]): Scheduler.statistics[source.id]["entitats_en_cua"] = []
             if (not "entitats_processades" in Scheduler.statistics[source.id]): Scheduler.statistics[source.id]["entitats_processades"] = []
-            if (not "canvis_de_cola" in Scheduler.statistics[source.id]): Scheduler.statistics[source.id]["canvis_de_cola"] = []
-            if (not "temps_en_cola" in Scheduler.statistics[source.id]): Scheduler.statistics[source.id]["temps_en_cola"] = []
+            if (not "canvis_de_cua" in Scheduler.statistics[source.id]): Scheduler.statistics[source.id]["canvis_de_cua"] = []
             if (not "entitats_fugides" in Scheduler.statistics[source.id]): Scheduler.statistics[source.id]["entitats_fugides"] = []
+            if (not "temps_esperant" in Scheduler.statistics[source.id]): Scheduler.statistics[source.id]["temps_esperant"] = []
 
             Scheduler.statistics[source.id]["entitats_creades"].append(source.entitatsCreades)
 
@@ -176,11 +176,11 @@ class Scheduler:
             for caja in cajas: entitats_processades += caja.entitatsTractades
             Scheduler.statistics[source.id]["entitats_processades"].append(entitats_processades)
 
-            Scheduler.statistics[source.id]["canvis_de_cola"].append(Client.total_changed_lines[source.id])
-
-            Scheduler.statistics[source.id]["temps_en_cola"].append(Client.total_wait_time[source.id])
+            Scheduler.statistics[source.id]["canvis_de_cua"].append(Client.total_changed_lines[source.id])
 
             Scheduler.statistics[source.id]["entitats_fugides"].append(Client.total_left_clients[source.id])
+
+            Scheduler.statistics[source.id]["temps_esperant"].append(Client.total_wait_time[source.id] / Client.total_processed_entities[source.id])
 
 
         Client.resetStatistics()

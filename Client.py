@@ -79,6 +79,9 @@ class Client:
             self.container.entitats.remove(self)
             self.container.numEntitats -= 1
             self.container.pesTotal -= self.pes
+            if (self.changeQueueEvent):
+                self.scheduler.eliminarEsdeveniment(self.changeQueueEvent)
+                self.changeQueueEvent = None
             log(self.scheduler, self, "se ha cansado de esperar y ha ahuecado el ala", color.FAIL)
 
             Client.total_left_clients[self.sourceId] += 1
