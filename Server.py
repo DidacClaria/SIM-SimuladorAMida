@@ -81,6 +81,7 @@ class Server:
         self.queue.numEntitats = self.queue.numEntitats - 1
         self.queue.pesTotal = self.queue.pesTotal - self.entitatActiva.pes
 
+        self.entitatActiva.destroy()
         self.entitatActiva = None
         self.state = 'idle'
         log(self.scheduler, self, "solicita a {} que le envíe la siguiente entidad".format(self.queue.id), color.OKCYAN)

@@ -12,12 +12,17 @@ class Scheduler:
 
     debug = False
 
+    numSimulations = 1
+    simulationNum = 0
     maxTime = 100
-    currentTime = 0
-    eventList = []
+
+    statistics = {}
 
 
     def __init__(self):
+        self.currentTime = 0
+        self.eventList = []
+
         self.id = 'Scheduler'
 
         # Crear objectos del CASO 1: Tres colas intercambiables, cada una asignada a un Server
@@ -77,15 +82,11 @@ class Scheduler:
         #bucle de simulació (condició fi simulació llista buida)
         while self.eventList and self.currentTime <= self.maxTime:
             if (not self.debug):
-                percentage = (self.currentTime/self.maxTime)*100
+                percentage = ((100 * self.simulationNum) / self.numSimulations) + (self.currentTime/self.maxTime)* (100 / self.numSimulations)
                 if (percentage > self.latestPercentage + self.percentageStep):
                     self.latestPercentage = percentage
                     print ("COMPLETION: {:.2f}%".format(self.latestPercentage), end="\r")
 
-            # print("CURRENT EVENTS:")
-            # for events in self.eventList:
-            #     print('{:.2f} - {}'.format(events.time, events.type))
-            #recuperem event simulacio
             event=self.properEvent()
 
             self.eventList.remove(event)
@@ -109,7 +110,7 @@ class Scheduler:
         #inserir esdeveniment de forma ordenada
         if (event.time < self.currentTime):
             # log(self, self, "[ERROR]: Viaje en el tiempo inesperado.", color.FAIL)
-            print("{}[ERROR]: Viaje en el tiempo inesperado{}".format(color.FAIL, color.ENDC))
+            print("{}[ERROR]: Viaje en el tiempo inesperado en evento {} de {}{}".format(color.FAIL, event.type, event.object.id, color.ENDC))
             event.time = self.currentTime
 
         log(self, self, "Añadiendo el evento {} en {:.2f}".format(event.type, event.time), color.OKBLUE)
@@ -149,27 +150,65 @@ class Scheduler:
 
 
     def recollirEstadistics(self):
-        if (not self.debug):
-            print ("COMPLETION: 100.00%", end="\r")
+        # if (not self.debug):
+        #     print ("COMPLETION: 100.00%", end="\r")
         
-        print(color.OKGREEN)
-        print("Tiempo de ejecución = {:.2f} segundos".format(self.maxTime))
 
-        print("\n=========== CASO 1 ===========")
-        print("Source1 ha creado ", self.source1.entitatsCreades, " entidades")
-        print("Cua1 contiene ", self.Queue1.numEntitats, " clientes con un peso total de {:.2f} (incluyendo el cliente que está en caja)".format(self.Queue1.pesTotal))
-        print("Cua2 contiene ", self.Queue2.numEntitats, " clientes con un peso total de {:.2f} (incluyendo el cliente que está en caja)".format(self.Queue2.pesTotal))
-        print("Cua3 contiene ", self.Queue3.numEntitats, " clientes con un peso total de {:.2f} (incluyendo el cliente que está en caja)".format(self.Queue3.pesTotal))
-        print("Caja1 ha procesado ", self.Caja1.entitatsTractades, " entidades")
-        print("Caja2 ha procesado ", self.Caja2.entitatsTractades, " entidades")
-        print("Caja3 ha procesado ", self.Caja3.entitatsTractades, " entidades")
-        print("Han habido ", Client.changed_lines, " cambios de cola")
+        sources = [self.source1, self.source2]
+        for source in sources:
+            if (not source.id in Scheduler.statistics): Scheduler.statistics[source.id] = {}
+            if (not "entitats_creades" in Scheduler.statistics[source.id]): Scheduler.statistics[source.id]["entitats_creades"] = []
+            if (not "entitats_en_cua" in Scheduler.statistics[source.id]): Scheduler.statistics[source.id]["entitats_en_cua"] = []
+            if (not "entitats_processades" in Scheduler.statistics[source.id]): Scheduler.statistics[source.id]["entitats_processades"] = []
+            if (not "canvis_de_cola" in Scheduler.statistics[source.id]): Scheduler.statistics[source.id]["canvis_de_cola"] = []
+            if (not "temps_en_cola" in Scheduler.statistics[source.id]): Scheduler.statistics[source.id]["temps_en_cola"] = []
+            if (not "entitats_fugides" in Scheduler.statistics[source.id]): Scheduler.statistics[source.id]["entitats_fugides"] = []
 
-        print("\n=========== CASO 2 ===========")
-        print("Source2 ha creado ", self.source2.entitatsCreades, " entidades")
-        print("CuaUnica contiene ", self.Queue4.numEntitats, " clientes con un peso total de {:.2f} (incluyendo los clientes que están en caja)".format(self.Queue4.pesTotal))
-        print("Caja4 ha procesado ", self.Caja4.entitatsTractades, " entidades")
-        print("Caja5 ha procesado ", self.Caja5.entitatsTractades, " entidades")
-        print("Caja6 ha procesado ", self.Caja6.entitatsTractades, " entidades")
+            Scheduler.statistics[source.id]["entitats_creades"].append(source.entitatsCreades)
 
-        print(color.ENDC)
+            entitats_en_cua = 0
+            for queue in source.queues: entitats_en_cua += queue.numEntitats
+            Scheduler.statistics[source.id]["entitats_en_cua"].append(entitats_en_cua)
+
+            entitats_processades = 0
+            cajas = []
+            for queue in source.queues: cajas.extend(queue.outputs)
+            for caja in cajas: entitats_processades += caja.entitatsTractades
+            Scheduler.statistics[source.id]["entitats_processades"].append(entitats_processades)
+
+            Scheduler.statistics[source.id]["canvis_de_cola"].append(Client.total_changed_lines[source.id])
+
+            Scheduler.statistics[source.id]["temps_en_cola"].append(Client.total_wait_time[source.id])
+
+            Scheduler.statistics[source.id]["entitats_fugides"].append(Client.total_left_clients[source.id])
+
+
+        Client.resetStatistics()
+
+
+
+        # print(color.OKGREEN)
+        # print("Tiempo de ejecución = {:.2f} segundos".format(self.maxTime))
+
+        # print("\n=========== CASO 1 ===========")
+        # print("Source1 ha creado ", self.source1.entitatsCreades, " entidades")
+        # print("Cua1 contiene ", self.Queue1.numEntitats, " clientes con un peso total de {:.2f} (incluyendo el cliente que está en caja)".format(self.Queue1.pesTotal))
+        # print("Cua2 contiene ", self.Queue2.numEntitats, " clientes con un peso total de {:.2f} (incluyendo el cliente que está en caja)".format(self.Queue2.pesTotal))
+        # print("Cua3 contiene ", self.Queue3.numEntitats, " clientes con un peso total de {:.2f} (incluyendo el cliente que está en caja)".format(self.Queue3.pesTotal))
+        # print("Caja1 ha procesado ", self.Caja1.entitatsTractades, " entidades")
+        # print("Caja2 ha procesado ", self.Caja2.entitatsTractades, " entidades")
+        # print("Caja3 ha procesado ", self.Caja3.entitatsTractades, " entidades")
+        # print("Han habido ", Client.total_changed_lines, " cambios de cola")
+        # print("Tiempo medio en la cola = {:.2f} segundos".format(Client.total_wait_time[self.source1.id] / Client.total_processed_entities[self.source1.id]))
+        # print("{} clientes se han cansado de esperar y se han ido sin comprar nada".format(Client.total_left_clients[self.source1.id]))
+
+        # print("\n=========== CASO 2 ===========")
+        # print("Source2 ha creado ", self.source2.entitatsCreades, " entidades")
+        # print("CuaUnica contiene ", self.Queue4.numEntitats, " clientes con un peso total de {:.2f} (incluyendo los clientes que están en caja)".format(self.Queue4.pesTotal))
+        # print("Caja4 ha procesado ", self.Caja4.entitatsTractades, " entidades")
+        # print("Caja5 ha procesado ", self.Caja5.entitatsTractades, " entidades")
+        # print("Caja6 ha procesado ", self.Caja6.entitatsTractades, " entidades")
+        # print("Tiempo medio en la cola = {:.2f} segundos".format(Client.total_wait_time[self.source2.id] / Client.total_processed_entities[self.source2.id]))
+        # print("{} clientes se han cansado de esperar y se han ido sin comprar nada".format(Client.total_left_clients[self.source2.id]))
+
+        # print(color.ENDC)

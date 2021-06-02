@@ -85,7 +85,7 @@ class Source:
 
 
     def crearEntitat(self):
-        entitat = Client(self.scheduler, self)
+        entitat = Client(self.scheduler, self, self.id)
         log(self.scheduler, self, "ha creado un Client con peso = {:.2f}".format(entitat.pes), color.OKGREEN)
         self.entitatsCreades = self.entitatsCreades + 1
         return entitat
