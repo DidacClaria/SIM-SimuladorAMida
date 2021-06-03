@@ -180,7 +180,8 @@ class Scheduler:
 
             Scheduler.statistics[source.id]["entitats_fugides"].append(Client.total_left_clients[source.id])
 
-            Scheduler.statistics[source.id]["temps_esperant"].append(Client.total_wait_time[source.id] / Client.total_processed_entities[source.id])
+            if Client.total_processed_entities[source.id] == 0: Scheduler.statistics[source.id]["temps_esperant"].append(0)
+            else: Scheduler.statistics[source.id]["temps_esperant"].append(Client.total_wait_time[source.id] / Client.total_processed_entities[source.id])
 
 
         Client.resetStatistics()

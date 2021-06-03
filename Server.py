@@ -44,7 +44,7 @@ class Server:
             self.simulationStart(event)
 
         elif (event.type=='END_SERVICE'):
-            self.processarFiServei(event)
+            self.processarFiServei(event.time)
 
         else:
             log(self.scheduler, self, "[WARN]: ha recibido un evento de tipo {} y no sabe cómo gestionarlo".format(event.type), color.WARNING)
@@ -56,6 +56,12 @@ class Server:
 
 
     def programarFinalServei(self, time, entitat):
+
+        if entitat.despistado:
+            log(self.scheduler, self, "el cliente {} se ha dejado la cartera y se ha ido sin comprar nada".format(entitat.id), color.OKGREEN)
+            self.processarFiServei(time)
+            return
+
 
         # que triguem a fer un servei (aleatorietat)
         tempsServei = entitat.pes
@@ -69,7 +75,7 @@ class Server:
         self.scheduler.afegirEsdeveniment(eventoProceso)
         
 
-    def processarFiServei(self,event):
+    def processarFiServei(self,time):
 
         log(self.scheduler, self, "ha terminado de procesar una entidad", color.OKGREEN)
 
@@ -78,12 +84,12 @@ class Server:
 
         #sink.recullEntitat(entitat)
         if (self.queue.numEntitats < 1): print("{}[ERROR]: {} decrementar el numero de clientes de {} a un valor negativo{}".format(color.FAIL, self.id, self.queue.id, color.ENDC))
-        self.queue.numEntitats = self.queue.numEntitats - 1
-        self.queue.pesTotal = self.queue.pesTotal - self.entitatActiva.pes
+        
+        self.queue.surtEntitat(self.entitatActiva)
 
         self.entitatActiva.destroy()
         self.entitatActiva = None
         self.state = 'idle'
         log(self.scheduler, self, "solicita a {} que le envíe la siguiente entidad".format(self.queue.id), color.OKCYAN)
-        self.queue.enviaProperaEntitat(event.time, self)
+        self.queue.enviaProperaEntitat(time, self)
         

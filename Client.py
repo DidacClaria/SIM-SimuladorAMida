@@ -1,4 +1,4 @@
-from Distributions import distribucioNormal
+from Distributions import distibucioUniforme, distribucioNormal
 from SimulationParameters import Parameters
 from TerminalColors import TerminalColors as color
 from TerminalColors import log
@@ -27,6 +27,11 @@ class Client:
 
         self.container = container
         self.changeQueueEvent = None
+
+        if distibucioUniforme() < Parameters.porcentajeDespistados: self.despistado = True
+        else: self.despistado = False
+
+        self.pesoEnCola = 0
 
         self.birthTime = self.scheduler.currentTime
 
@@ -76,9 +81,11 @@ class Client:
                 print("{}[ERROR]: {} ha intentado ahuecar el ala pero en lugar de estar en una cola estaba en {}{}".format(color.FAIL, self.id, self.container.id, color.ENDC))
                 return
             
-            self.container.entitats.remove(self)
-            self.container.numEntitats -= 1
-            self.container.pesTotal -= self.pes
+            # self.container.numEntitats -= 1
+            # self.container.pesTotal -= self.pes
+            # self.container.entitats.remove(self)
+            self.container.surtEntitat(self)
+
             if (self.changeQueueEvent):
                 self.scheduler.eliminarEsdeveniment(self.changeQueueEvent)
                 self.changeQueueEvent = None
@@ -103,7 +110,7 @@ class Client:
         # Mirar quina cua té menys pes
         bestQueue = None
         for queue in self.container.connectedQueues:
-            if ((bestQueue == None or queue.pesTotal < bestQueue.pesTotal) and queue.state != 'full'):
+            if ((bestQueue == None or queue.pesTotal < bestQueue.pesTotal) and queue.state != 'full' and queue.pesTotal <= self.pesoEnCola):
                 bestQueue = queue
 
         # Transferir la entitat a la queue
@@ -112,9 +119,10 @@ class Client:
             Client.total_changed_lines[self.sourceId] += 1
             if (self.container.numEntitats < 1): print("{}[ERROR]: {} ha intentado decrementar el numero de clientes de {} a un valor negativo{}".format(color.FAIL, self.id, self.container.id, color.ENDC))
 
-            self.container.numEntitats = self.container.numEntitats - 1
-            self.container.pesTotal = self.container.pesTotal - self.pes
-            self.container.entitats.remove(self)
+            # self.container.numEntitats = self.container.numEntitats - 1
+            # self.container.pesTotal = self.container.pesTotal - self.pes
+            # self.container.entitats.remove(self)
+            self.container.surtEntitat(self)
 
             bestQueue.recullEntitat(self.scheduler.currentTime, self)
         

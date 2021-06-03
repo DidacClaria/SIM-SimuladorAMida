@@ -35,10 +35,11 @@ class Queue:
     def recullEntitat(self, time, entitat):
         log(self.scheduler, self, "ha recibido una nueva entidad", color.OKCYAN)
         entitat.moveTo(self)
-        self.entitats.append(entitat)
         
-        self.numEntitats = self.numEntitats + 1
-        self.pesTotal = self.pesTotal + entitat.pes
+        self.entraEntitat(entitat)
+        
+        # self.numEntitats = self.numEntitats + 1
+        # self.pesTotal = self.pesTotal + entitat.pes
         
         idleServer = None
         for server in self.outputs:
@@ -51,6 +52,27 @@ class Queue:
         else:
             log(self.scheduler, self, "ha recibido una entidad pero ninguno de sus servers está libre", color.WARNING)
     
+    def entraEntitat(self, entitat):
+
+        self.entitats.append(entitat)
+        entitat.pesoEnCola = self.pesTotal
+
+        self.numEntitats = self.numEntitats + 1
+        self.pesTotal = self.pesTotal + entitat.pes
+
+    def surtEntitat(self, entitat): 
+        index = 0
+
+        if entitat in self.entitats:
+            index = self.entitats.index(entitat)
+            self.entitats.remove(entitat)
+
+        # actualizar los valores del peso en cola de todos los clientes:
+        for i in range(index, len(self.entitats)):
+            self.entitats[i].pesoEnCola -= entitat.pes
+
+        self.numEntitats = self.numEntitats - 1
+        self.pesTotal = self.pesTotal - entitat.pes
 
     def enviaProperaEntitat(self, time, server):
         if (server.state == 'idle' and self.entitats):
