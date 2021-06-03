@@ -62,6 +62,12 @@ OTROS PARÁMETROS DE LA SIMULACIÓN:
     de estos parámetros, simplemente basta con abrir el archivo con cualquier editor de texto, modificar los valores que
     aparecen y guardar los cambios. Entonces, la próxima vez que se ejecute el programa la simulación utilizará los nuevos
     parámetros modificados.
+    
+    Algunos valores que utiliza la simulación se obtienen a partir de distribuciones normales utilizando algunos estos parámetros.
+    Si el resultado de la distribución normal es negativo, el programa comunicará a través de la consola un ERROR de "viaje en
+    el tiempo inesperado". Aunque el programa gestiona el error simplemente convirtiendo el valor a 0 para que no lleve a otros
+    errores, esto influye en la distribución de las estadísticas. Por lo tanto, es importante utilizar parámetros en los que sea
+    poco probable recibir un valor negativo en la distribución normal según la media y la varianza
 
 
 
